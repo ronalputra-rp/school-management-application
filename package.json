@@ -1,0 +1,16 @@
+{
+  "name": "school-management-application",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "npm run dev --prefix frontend/client",
+    "dev:frontend": "npm run dev --prefix frontend/client",
+    "dev:backend": "npm run dev --prefix backend",
+    "build": "npm run build --prefix frontend/client",
+    "start": "npm start --prefix backend",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
