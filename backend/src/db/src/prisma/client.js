@@ -9,8 +9,14 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 // Memuat .env dari root package db, bukan dari cwd proses.
 dotenv.config({ path: path.resolve(here, '../../.env') });
 
+const connectionString = process.env.DATABASE_URL;
+
+if (!connectionString) {
+  throw new Error("DATABASE_URL belum diset di environment variables");
+}
+
 const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL,
+  connectionString,
 });
 
 export const prisma = new PrismaClient({ adapter });

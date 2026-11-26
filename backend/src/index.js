@@ -32,23 +32,10 @@ app.use('/api/teachers', teacherRoutes);
 app.use('/api/parents', parentRoutes);
 app.use('/api/users', userRoutes);
 
-// Frontend static files
-const frontendPath = path.resolve(
-    here,
-    '../../frontend/client/dist'
-);
-
-app.use(express.static(frontendPath));
-
-// React Router fallback
 app.use((req, res) => {
-    if (req.path.startsWith('/api/')) {
-        return res.status(404).json({
-            message: "Endpoint tidak ditemukan"
-        });
-    }
-
-    return res.sendFile(path.join(frontendPath, 'index.html'));
+    return res.status(404).send({
+        message: "Endpoint tidak ditemukan"
+    });
 });
 
 const port = process.env.PORT || 5000;
