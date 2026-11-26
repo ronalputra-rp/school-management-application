@@ -6,12 +6,13 @@ import {
     updatingStudent,
 } from "../services/studentService.js";
 import { showClasses } from "../services/classService.js";
+import { showParents } from "../services/parentService.js";
 import { buildStudentClassRows } from "../utils/studentGrouping.js";
 import ConfirmModal from "./ConfirmModal.jsx";
 import FormModal from "./FormModal.jsx";
 import Toast from "./Toast.jsx";
 
-const COLUMN_COUNT = 7;
+const COLUMN_COUNT = 9;
 
 const avatarColors = [
     "bg-sky-100 text-sky-700",
@@ -93,6 +94,7 @@ const emptyForm = {
 
 export default function StudentClassTable() {
     const [rows, setRows] = useState([]);
+    const [parents, setParents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [reloadKey, setReloadKey] = useState(0);
@@ -109,10 +111,11 @@ export default function StudentClassTable() {
 
     useEffect(() => {
         let active = true;
-        Promise.all([showClasses(), showStudents()])
-            .then(([classesResult, studentsResult]) => {
+        Promise.all([showClasses(), showStudents(), showParents()])
+            .then(([classesResult, studentsResult, parentsResult]) => {
                 if (!active) return;
                 setRows(buildStudentClassRows(classesResult.data, studentsResult.data));
+                setParents(Array.isArray(parentsResult.data) ? parentsResult.data : []);
                 setLoading(false);
             })
             .catch((err) => {
@@ -124,6 +127,13 @@ export default function StudentClassTable() {
     }, [reloadKey]);
 
     const totalStudents = rows.reduce((total, row) => total + row.students.length, 0);
+    const parentsByStudentId = parents.reduce((grouped, parent) => {
+        if (parent.studentId == null) return grouped;
+        return {
+            ...grouped,
+            [parent.studentId]: [...(grouped[parent.studentId] || []), parent],
+        };
+    }, {});
     const classOptions = rows.filter((row) => row.id !== 0);
     const allCollapsed = rows.length > 0 && rows.every((row) => collapsedIds.includes(row.id));
 
@@ -273,7 +283,7 @@ export default function StudentClassTable() {
                         </div>
                     ) : (
                         <div className="overflow-x-auto">
-                            <table className="w-full min-w-[960px] border-collapse text-left text-[13px] leading-tight">
+                            <table className="w-full min-w-[1120px] border-collapse text-left text-[13px] leading-tight">
                                 <thead>
                                     <tr className="bg-slate-50 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
                                         <th scope="col" className="w-16 px-5 py-2.5">No</th>
@@ -281,6 +291,8 @@ export default function StudentClassTable() {
                                         <th scope="col" className="px-4 py-2.5">Student number</th>
                                         <th scope="col" className="px-4 py-2.5">NISN</th>
                                         <th scope="col" className="px-4 py-2.5">Gender</th>
+                                        <th scope="col" className="px-4 py-2.5">Orang Tua</th>
+                                        <th scope="col" className="px-4 py-2.5">Telepon</th>
                                         <th scope="col" className="px-4 py-2.5">Alamat</th>
                                         <th scope="col" className="px-4 py-2.5">Aksi</th>
                                     </tr>
@@ -346,6 +358,12 @@ export default function StudentClassTable() {
                                                 ) : (
                                                     row.students.map((student, index) => {
                                                         const unassigned = noClass || student.classId == null;
+                                                        const studentParents = parentsByStudentId[student.id] || [];
+                                                        const parentNames = studentParents.map((parent) => parent.name).join(", ");
+                                                        const parentPhones = studentParents
+                                                            .map((parent) => parent.phone)
+                                                            .filter(Boolean)
+                                                            .join(", ");
                                                         return (
                                                             <tr
                                                                 key={student.id}
@@ -373,6 +391,10 @@ export default function StudentClassTable() {
                                                                 <td className="px-4 py-1.5 text-slate-600">{student.studentNumber}</td>
                                                                 <td className="px-4 py-1.5 text-slate-600">{student.nisn}</td>
                                                                 <td className="px-4 py-1.5 text-slate-600">{student.gender}</td>
+                                                                <td className="max-w-48 truncate px-4 py-1.5 text-slate-600" title={parentNames}>
+                                                                    {parentNames || "-"}
+                                                                </td>
+                                                                <td className="px-4 py-1.5 text-slate-600">{parentPhones || "-"}</td>
                                                                 <td className="max-w-56 truncate px-4 py-1.5 text-slate-600" title={student.address || ""}>
                                                                     {student.address || "-"}
                                                                 </td>

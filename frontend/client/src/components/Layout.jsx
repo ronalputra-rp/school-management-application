@@ -5,6 +5,7 @@ const links = [
     { to: "/students", label: "Siswa" },
     { to: "/teachers", label: "Guru" },
     { to: "/classes", label: "Kelas" },
+    { to: "/parents", label: "Orang Tua" },
     { to: "/users", label: "Pengguna" },
 ];
 

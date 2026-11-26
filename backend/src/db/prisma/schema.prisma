@@ -14,6 +14,7 @@ model User {
   students  Student[]
   teachers  Teacher[]
   class     Class[]
+  parents   Parents[]
 }
 
 model Class {
@@ -30,7 +31,7 @@ model Class {
 model Student {
   id            Int       @id @default(autoincrement())
   userId        Int
-  user          User      @relation(fields: [userId], references: [id])
+  user          User      @relation(fields: [userId], references: [id]) 
   name          String
   studentNumber Int
   nisn          BigInt    @unique
@@ -40,6 +41,7 @@ model Student {
   address       String?
   classId       Int?
   class         Class?    @relation(fields: [classId], references: [id], onDelete: SetNull)
+  parents       Parents[]
 }
 
 model Teacher {
@@ -53,4 +55,19 @@ model Teacher {
   address String?
   classId Int?
   class   Class?  @relation(fields: [classId], references: [id], onDelete: SetNull)
+}
+
+model Parents {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  name      String
+  age       Int
+  phone     String?
+  address   String?
+  studentId Int?
+  student   Student? @relation(fields: [studentId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([studentId])
 }

@@ -7,6 +7,7 @@ import authRoutes from './routes/auth.route.js';
 import classRoutes from './routes/class.route.js';
 import studentRoutes from './routes/student.route.js';
 import teacherRoutes from './routes/teacher.route.js';
+import parentRoutes from './routes/parents.route.js';
 import userRoutes from './routes/user.route.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -28,6 +29,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/classes', classRoutes);
 app.use('/api/students', studentRoutes);
 app.use('/api/teachers', teacherRoutes);
+app.use('/api/parents', parentRoutes);
 app.use('/api/users', userRoutes);
 
 app.use((req, res) => {
